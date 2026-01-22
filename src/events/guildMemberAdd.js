@@ -9,11 +9,15 @@ const event = {
     const channel = member.guild.channels.cache.find(
       (channel) => channel.name === CHANNEL_NAME
     );
+    if (!channel) {
+      console.error("❌ Channel not found:", CHANNEL_NAME);
+      return;
+    }
 
     /*
       TODO: Change getWelcomeMessage to getWelcomeMessageWithMeme to send a meme to welcome your user.
     */
-    const welcomeMessage = await getWelcomeMessage(member.id);
+    const welcomeMessage = await getWelcomeMessageWithMeme(member.id);
     channel.send(welcomeMessage);
   },
 };
@@ -42,7 +46,7 @@ const getWelcomeMessageWithMeme = async (userId) => {
 
   return {
     content: `Welcome ${userMention(userId)},
-    Here's a meme for you to enjoy!`,
+    This is my meme!`,
     embeds: [meme],
   };
 };
