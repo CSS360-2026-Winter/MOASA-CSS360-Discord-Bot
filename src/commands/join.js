@@ -1,9 +1,9 @@
 import { SlashCommandBuilder } from "discord.js";
 import { assignRoles } from "../helpers/roles.js";
-import { dmRoles } from "../helpers/dmRoles.js";
+import { joinedPlayers, playerRoles } from "../helpers/gameState.js";
 
 let joinOpen = false;
-const joinedPlayers = new Set();
+//const joinedPlayers = new Set();
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function formatPlayers(client, players) {
@@ -81,11 +81,15 @@ export default {
           `✅ **Recruitment Closed!**\n` +
           `Total Players: **${finalSize}**\n` +
           `Members: ${formatPlayers(interaction.client, joinedPlayers)}\n\n` +
-          `🎭 Roles are being assigned...`
+          `🎭 Roles have been assigned!\nUse \`/role\` to view your role privately.`
       });
 
       const roles = assignRoles(joinedPlayers);
-      await dmRoles(roles, interaction.guild);
+
+      // store roles for /role command
+      for (const [userId, role] of roles.entries()) {
+        playerRoles.set(userId, role);
+      }
     }
   }
 };

@@ -1,55 +1,28 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
-
-const ROLES = {
-  mafia: {
-    name: "🕵️ Mafia",
-    faction: "Mafia",
-    description: "Each night, choose one player to eliminate.",
-    win: "Eliminate all civilians."
-  },
-  doctor: {
-    name: "🩺 Doctor",
-    faction: "Civilians",
-    description: "Each night, choose one player to protect. You cannot protect yourself.",
-    win: "Identify and eliminate all Mafia members."
-  },
-  civilian: {
-    name: "👥 Civilian",
-    faction: "Civilians",
-    description: "No special abilities.",
-    win: "Identify and eliminate all Mafia members."
-  }
-};
+// commands/role.js
+import { SlashCommandBuilder } from "discord.js";
+import { playerRoles } from "../helpers/gameState.js";
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("mafia")
-    .setDescription("Mafia game commands")
-    .addSubcommand(sub =>
-      sub
-        .setName("role")
-        .setDescription("View all roles in the Mafia game")
-    ),
+    .setName("role")
+    .setDescription("View your Mafia role"),
 
   async execute(interaction) {
-    const embed = new EmbedBuilder()
-      .setTitle("🕵️ Mafia Roles")
-      .setColor(0x8b0000)
-      .setFooter({ text: "Roles shown here do not reveal any player's identity." });
+    const role = playerRoles.get(interaction.user.id);
 
-    for (const role of Object.values(ROLES)) {
-      embed.addFields({
-        name: role.name,
-        value:
-          `**Faction:** ${role.faction}\n` +
-          `**Ability:** ${role.description}\n` +
-          `**Win Condition:** ${role.win}`
+    if (!role) {
+      return interaction.reply({
+        content: "❌ You are not part of an active Mafia game.",
+        ephemeral: true,
       });
     }
 
     await interaction.reply({
-      embeds: [embed],
-      ephemeral: true
+      content:
+        `🎭 **Your Role: ${role}**\n\n` +
+        "Do not reveal your role to other players.\n" +
+        "Good luck… 😈",
+      ephemeral: true,
     });
-  }
+  },
 };
