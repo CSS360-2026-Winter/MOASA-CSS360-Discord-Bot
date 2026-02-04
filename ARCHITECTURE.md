@@ -1,3 +1,22 @@
+## Mafia Game Bot Architecture
+
+Introduction
+
+This document outlines the architecture of the Mafia game bot. The bot facilitates a multiplayer Mafia game experience on Discord, managing game state, player roles, and the flow of day/night phases.
+
+System Overview
+
+The bot interacts with Discord's API to provide users with game commands and maintain game logic. Players interact with the bot through a series of commands like `/join`, `/role`, `/start`, and `/vote`.
+
+Activity Diagram – Mafia Game Flow
+
+This activity diagram illustrates the control flow of the Mafia game from player recruitment through game termination. It begins with users joining the game via the `/join` command, followed by a timed recruitment phase and role assignment. The game then alternates between night and day phases, resolving role-based actions, player discussions, voting, and eliminations.
+After each cycle, the bot evaluates win conditions and either continues the game loop or announces a winner and ends the game.
+
+![Mafia Game Activity Diagram](../MOASA-CSS360-Discord-Bot/src/images/Activity-Diagram.png)
+
+---
+
 ## Mafia Game Engine: State Management & Game Logic
 Overview
 The Mafia game is the core functionality of the MOASA bot. It utilizes a Stateful Event-Driven Architecture, where the bot tracks the game's progression (Day/Night phases) and player statuses in real-time.
@@ -25,7 +44,7 @@ Win Condition Check: After each phase, the bot evaluates if the number of Mafia 
 Architecture Diagram (System Context & Flow)
 The Mafia logic follows a circular flow where user interactions continuously update the internal Game State Storage, which then determines the next outcome displayed to the Discord channel.
 
-https://github.com/CSS360-2026-Winter/MOASA-CSS360-Discord-Bot/blob/verify-v1.0/Untitled.png?raw=true
+![Mafia Game Data Flow Diagram](../MOASA-CSS360-Discord-Bot/src/images/datadiagram.png)
 
 Relevant Code
 src/commands/mafia.js: Main command handler for game flow.
