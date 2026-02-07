@@ -123,3 +123,19 @@ This diagram documents the bot’s command architecture. `InteractionCreateEvent
 
 ### Why it matters
 This structure keeps Discord event handling separate from game logic. Adding a new command only requires a new `Command` module, while `GameState` remains the single source of truth for shared game data.
+
+## Use Case Diagram: Role-Based Interaction
+
+### Overview
+This diagram depicts how players interact with the Mafia Bot, specifically how user capabilities change after role assignment.
+
+### Diagram
+![Use Case Diagram](./docs/diagram/Use-case-diagram.png)
+
+### Description
+The diagram focuses on how player permissions change throughout a game. A generic user joins the game and is assigned a specific role by the bot's assignment logic. This transition enables role-specific functionality, such as the Doctor's ability to save players or the Mafia's ability to select targets. The Mafia Bot further automates the game by handling processes such as phase transitions, win-condition checks, and game termination.
+
+### Architectural Significance
+The use case diagram defines the bot's access control and game state management.
+- Role-based permissions: Grants access to commands based on assigned role
+- Phase-restricted interaction: Aligns player inputs with the game's current phase
