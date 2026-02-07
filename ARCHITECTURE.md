@@ -106,3 +106,20 @@ All commands share the same execution pipeline.
 
 This design allows new commands to be added without modifying the event listener.
 Low coupling with the game state also improves maintainability and debugging.
+
+## UML Class Diagram: Command Dispatch + Shared Game State 
+
+### Diagram
+![UML Class Diagram](docs/diagram/ClassDiagram.png)
+
+### What it shows
+This diagram documents the bot’s command architecture. `InteractionCreateEvent` receives a Discord interaction and dispatches to a `Command` implementation based on `interaction.commandName`. Each command module implements `execute(interaction)`.
+
+### Key relationships
+- `InteractionCreateEvent` -> `Command`: dispatches by command name
+- `JoinCommand` -> `GameState`: adds players and assigns roles (`addPlayer()`, `setRole()`)
+- `RoleCommand` and `MyCommandsCommand` -> `GameState`: reads player role (`getRole()`)
+- `ResetCommand` -> `GameState`: clears in-memory state (`reset()`)
+
+### Why it matters
+This structure keeps Discord event handling separate from game logic. Adding a new command only requires a new `Command` module, while `GameState` remains the single source of truth for shared game data.
