@@ -210,3 +210,39 @@ From this tester, we were able to reveale the runtime reliability and architectu
 The bot is currently icomplete and still lacks sufficient error handling.
 Even a single malformed interaction can cause unstable behavior or halt further execution paths.  
 Stability and fault tolerance can be improved by adding validation guards and isolating command execution. 
+
+
+# Code Analysis Report(4)
+## Ayad Abunab – Unit Tests (Task 5, Step 1.7)
+
+### What I Implemented
+I added 3 unit tests using Mocha/Chai to validate core helper behavior without needing to connect to Discord.
+
+### Tests Added
+1. **gameState.resetGame clears state**
+   - Verifies `resetGame()` empties `joinedPlayers` and `playerRoles`.
+   - This matters because these structures drive game flow, and stale state can break new games.
+
+2. **loadCommands loads valid commands**
+   - Creates a temporary commands folder with a valid command file that includes `data.name`.
+   - Confirms `loadCommands()` registers it into `client.commands`.
+
+3. **loadCommands warns and skips invalid commands**
+   - Creates a temporary command file missing `data.name`.
+   - Confirms the bot logs a warning and does not register the command.
+
+### Why This Is Useful
+These tests cover two high-value failure points:
+- **State resets**: prevents bugs where players/roles carry over between games.
+- **Command loading**: prevents silent failures when a command is malformed or missing metadata.
+
+### Limitations / Next Improvements
+- These unit tests do not currently cover Discord interaction flows (ex: `/join` countdown behavior) because the command mixes timing, state mutation, and Discord message editing in one function.
+- A future improvement would be to refactor `join.js` to isolate:
+  - player validation
+  - countdown timer logic
+  - reply/edit formatting
+  so the core logic can be unit tested without waiting 15 seconds or mocking Discord heavily.
+
+### Evidence
+`npm test` runs all three tests successfully.
