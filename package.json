@@ -8,7 +8,8 @@
     "start": "npm run build && node -r dotenv/config build/app.js",
     "dev": "nodemon",
     "prod": "node build/app.js",
-    "test": "mocha -r esbuild-runner/register ./tests/*.spec.js --exit"
+    "test": "mocha -r esbuild-runner/register ./tests/*.spec.js --exit",
+    "test:watch": "mocha -r esbuild-runner/register ./tests/*.spec.js --watch"
   },
   "keywords": [
     "discord",
@@ -28,6 +29,7 @@
     "dotenv": "^16.0.2",
     "esbuild": "^0.15.9",
     "esbuild-runner": "^2.2.1",
+    "jest": "^30.2.0",
     "mocha": "^10.0.0",
     "nodemon": "^2.0.22"
   }
