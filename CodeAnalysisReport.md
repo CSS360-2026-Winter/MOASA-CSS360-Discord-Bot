@@ -131,3 +131,82 @@ countdown timer
 UI update logic
 game start logic
 Separating these responsibilities would reduce complexity and improve maintainability.
+
+
+# Code Analysis Report(3)
+## Sari Ando – Fuzz Testing Analysis
+(3) Fuzz Testing Analysis
+
+This report presents three representative issues discovered during fuzz testing.
+
+## Method
+I implemented a custom fuzz tester that directly invokes the bot’s interaction handler without Discord.  
+The fuzzer generates randomized command names and user IDs and repeatedly calls the command execution pipeline.
+The goal is to explore execution paths that normal user interaction may not reach.
+
+---
+
+## Issue 1: Guild Assumption Crash (Null Reference)
+### Description
+The `join` command assumes the guild member cache always exists.
+The command accesses `guild.members.cache` without verifying that the interaction originated from a guild.
+![Join crash](images/fuzz-join-null.png)
+
+### Impact
+The bot might crash when:
+- command is executed in DMs
+- Discord API delay
+- permissions incomplete
+
+### To Fix
+Use this code: 
+if (!interaction.guild || !interaction.guild.members) {
+  await interaction.reply({
+    content: "Server data is not available yet. Try again in a moment.",
+    ephemeral: true
+  });
+  return;
+}
+
+
+## Issue 2: Asynchronous Exception Propagation
+### Description
+The error occurs inside an awaited async command execution and propagates through the promise queue.
+Observed stack trace shows propagation through processTicksAndRejections.
+![Async crash](images/fuzz-async-propagation.png)
+
+### Impact
+This may cause:
+- Terminate the process
+- Brak the ongoing games
+
+### To Fix
+Add structured validation before async operations and isolate state mutation from message generation.
+
+
+## Issue 3: Failure Amplification
+### Description
+Once a command throws an exception, the global interaction handler responds and execution flow stops.
+Subsequent command logic in the same runtime context becomes unreachable.
+![Error count](images/fuzz-error-count.png)
+
+### Impact
+This may cause: 
+- A single faulty command can place the bot in a degraded state where further actions cannot be validated or processed.
+- This significantly reduces fault tolerance.
+
+### To Fix
+Use this code:
+try {
+  await command.execute(interaction);
+} catch (err) {
+  logError(err);
+  await safeErrorReply(interaction);
+}
+resetTransientState();
+
+## Conclusion
+From this tester, we were able to reveale the runtime reliability and architectural robustness issues.  
+The bot is currently icomplete and still lacks sufficient error handling.
+Even a single malformed interaction can cause unstable behavior or halt further execution paths.  
+Stability and fault tolerance can be improved by adding validation guards and isolating command execution. 
