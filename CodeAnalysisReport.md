@@ -139,26 +139,31 @@ Separating these responsibilities would reduce complexity and improve maintainab
 (4) Test Coverage & Automated Testing Analysis
 Coverage Tooling
 
-### Test coverage was measured using:
+### Overview
+The purpose of this section was to measure automated test coverage of the Mafia Discord Bot and identify weaknesses in code structure, logic branching, and maintainability.
+
+Test coverage was measured using:
 * node --test (Node.js built-in test runner)
 * c8 (JavaScript code coverage tool)
 The test suite was executed using:
 * NODE_ENV=test c8 node --test
-### Results: 
-![Final Coverage Results](./docs/code-analysis/Test-Coverage.png)
-Metric	Coverage
-Statements	74.79%
-Branches	70.83%
-Functions	36.84%
-Lines	74.79%
 All 7 tests passed successfully.
+### Coverage Results
+![Final Coverage Results](./docs/code-analysis/Test-Coverage.png)
+| Metric | Coverage |
+|-------------------|
+| Statements |	74.79% |
+| Branches |	70.83% |
+| Functions | 	36.84% |
+| Lines |	74.79% |
+Statement and line coverage are relatively strong (~75%), indicating most executable code paths are tested. However, function coverage is significantly lower, meaning several defined functions are not fully exercised during testing.
 ### Components Covered by Tests
 1. Command Logic
 The following commands were tested:
-join.js → channel validation
-reset.js → state clearing
-role.js → role retrieval behavior
-role assignment logic via helpers
+* join.js → channel validation
+* reset.js → state clearing
+* role.js → role retrieval behavior
+* role assignment logic via helpers
 2. Game State Helpers
 The following helper functions reached 100% coverage:
 * resetGame()
@@ -167,8 +172,8 @@ These functions are fully tested and verified to:
 * Properly clear state
 * Assign roles correctly
 * Maintain consistent game data
-* Technical Challenges Encountered
-### Issue 1: ESM vs CommonJS Compatibility
+### Technical Challenges Encountered
+Issue 1: ESM vs CommonJS Compatibility
 The project uses:
 "type": "module"
 However, discord.js is distributed as CommonJS.
@@ -178,26 +183,26 @@ This caused errors such as:
 Resolution:
 * Switched to default import pattern
 * Prevented Discord constructors from executing during tests using:
-* * if (process.env.NODE_ENV !== "test")
-* * This allowed business logic to be tested independently of Discord runtime behavior.
-### Issue 2: Discord Runtime Code Executing During Tests
+    * if (process.env.NODE_ENV !== "test")
+* This allowed business logic to be tested independently of Discord runtime behavior.
+Issue 2: Discord Runtime Code Executing During Tests
 Command files exported:
 * export const data = new SlashCommandBuilder()
 * This executed immediately when imported, causing test failures.
 Resolution:
 * Command metadata creation was conditionally wrapped so that:
-* * In production → Discord command is built normally
-* * In test environment → Only logic is loaded
-* * This improved test stability significantly.
-### Issue 3: Tight Coupling to Discord Client Internals
+    * In production → Discord command is built normally
+    * In test environment → Only logic is loaded
+* This improved test stability significantly.
+Issue 3: Tight Coupling to Discord Client Internals
 Some logic depended on:
 * client.users.cache.get(id)
-* This made mocking difficult and revealed that business logic was tightly coupled to the Discord API.
+This made mocking difficult and revealed that business logic was tightly coupled to the Discord API.
 Impact:
 * More complex mocks required
 * Harder isolation of logic
 * Reduced modularity
-* Identified Weaknesses from Coverage Results
+### Identified Weaknesses from Coverage Results
 1. Low Function Coverage (36.84%)
 Although statements and lines are ~75%, function coverage is significantly lower.
 This indicates:
@@ -213,11 +218,11 @@ Uncovered areas include:
 * Minimum player failure branch
 * Message edit handling
 Reason:
-* These behaviors depend on:
-* * Time-based loops
-* * Asynchronous Discord interactions
-* * Real message editing behavior
-* These are difficult to simulate in a pure unit test environment.
+These behaviors depend on:
+* Time-based loops
+* Asynchronous Discord interactions
+* Real message editing behavior
+These are difficult to simulate in a pure unit test environment.
 3. Time-Dependent Logic Reduces Testability
 The 15-second recruitment countdown introduces:
 * Delayed execution
@@ -231,4 +236,4 @@ Through the process of achieving test coverage, several design limitations becam
 * Global mutable state prevents multiple concurrent games.
 * Commands perform too many responsibilities inside single functions.
 * Some code executes at module load time instead of runtime.
-* Testing exposed structural design weaknesses that were not immediately visible during development.
+Testing exposed structural design weaknesses that were not immediately visible during development.
