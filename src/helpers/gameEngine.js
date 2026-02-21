@@ -53,44 +53,78 @@ export const startNight = async (client, channel) => {
 async function resolveNight(client, channel) {
   setPhase("DAY");
   const { mafiaTarget, doctorTarget } = nightActions;
-  let killMessage = "";
 
-  if (mafiaTarget) {
-    if (mafiaTarget === doctorTarget) {
-      killMessage = "🏥 **The Mafia attacked last night, but the Doctor saved the victim!** No one died.";
-    } else {
-      alivePlayers.delete(mafiaTarget);
-      killMessage = `🩸 **Tragedy strikes!** <@${mafiaTarget}> was found dead. They were a **${playerRoles.get(mafiaTarget)}**.`;
+  if (mafiaTarget && mafiaTarget === doctorTarget) {
+    try {
+      // Trying the most likely path based on your folder structure
+      const imagePath = "./src/helpers/doctor-save.png";
+      
+      await channel.send({
+        content: "🏥 **The Mafia attacked last night, but the Doctor saved the victim!** No one died.",
+        files: [imagePath] 
+      });
+    } catch (error) {
+      // This will print the exact reason in your terminal (black screen)
+      console.error("❌ Image upload failed. Check this path:", error.path || "Unknown path");
+      console.error("Full Error:", error.message);
+
+      await channel.send("🏥 **The Mafia attacked last night, but the Doctor saved the victim!** No one died.");
     }
-  } else {
-    killMessage = "🕊️ **A quiet night.** Nothing happened...";
+  } 
+  else if (mafiaTarget) {
+    const role = playerRoles.get(mafiaTarget);
+    alivePlayers.delete(mafiaTarget);
+    await channel.send(`🩸 **Tragedy strikes!** <@${mafiaTarget}> was found dead. They were a **${role}**.`);
+  } 
+  else {
+    await channel.send("🕊️ **A quiet night.** Nothing happened...");
   }
 
-  await channel.send(killMessage);
-  
-  // Day phase begins
+  await sleep(2000); 
   await startDay(client, channel);
 }
 
-// Day phase
+
 async function startDay(client, channel) {
   setPhase("DAY");
-  votes.clear(); // Ensure votes are empty at start of day
+  votes.clear(); // Ensure votes are empty at the start of the day
 
-  await channel.send("☀️ **Day Phase begins.**\n" +
-                     "**Players discuss** and use `/vote` to identify the Mafia.\n" +
-                     "Voting closes in **60 seconds**!");
+  let timer = 60; // Initial voting duration
+  const voteImagePath = "./src/helpers/vote-processing.png"; // ✅ Path to your image
 
-  let timer = 60;
+  // 1. Send initial message WITH the image
+  const votingMsg = await channel.send({
+    content: `☀️ **Day Phase begins.**\n` +
+             `**Players discuss** and use \`/vote\` to identify the Mafia.\n` +
+             `⌛ Voting closes in **${timer}** seconds!`,
+    files: [voteImagePath] // ✅ Image added here
+  });
+
+  // 2. Countdown loop
   while (timer > 0) {
-    // End early if everyone alive has voted
     if (votes.size === alivePlayers.size && alivePlayers.size > 0) break;
-    
-    await sleep(1000);
-    timer--;
+
+    await sleep(1000); 
+    timer--;          
+
+    try {
+      // Edit the text while keeping the image attached
+      await votingMsg.edit({
+        content: `☀️ **Day Phase begins.**\n` +
+                 `**Players discuss** and use \`/vote\` to identify the Mafia.\n` +
+                 `⌛ Voting closes in **${timer}** seconds!`
+      });
+    } catch (error) {
+      console.error("Voting timer update error:", error);
+      break; 
+    }
   }
 
-  await channel.send("⌛ **Time is up!** Processing votes...");
+  // 3. Final update when voting finishes
+  await votingMsg.edit({
+    content: "☀️ **Day Phase begins.**\n⌛ **Voting has closed!** Processing votes..."
+  });
+  
   await sleep(2000);
   await resolveDay(client, channel);
 }
