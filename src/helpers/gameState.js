@@ -14,6 +14,7 @@ export let votes = new Map();
 export function resetGame() {
   joinedPlayers.clear();
   playerRoles.clear();
+  alivePlayers.clear();
   currentPhase = "PRE_GAME";
   nightActions = { mafiaTarget: null, doctorTarget: null };
   votes.clear();

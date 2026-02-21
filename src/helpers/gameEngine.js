@@ -80,7 +80,22 @@ async function resolveNight(client, channel) {
     await channel.send("🕊️ **A quiet night.** Nothing happened...");
   }
 
-  await sleep(2000); 
+  // NEW: check win condition after night resolves
+  const aliveArray = [...alivePlayers];
+  const mafiaAlive = aliveArray.filter(id => playerRoles.get(id) === "Mafia").length;
+  const townAlive = aliveArray.length - mafiaAlive;
+
+  if (mafiaAlive === 0) {
+    setPhase("ENDED");
+    return channel.send("🎉 **Civilians Win!** All Mafia members have been eliminated.");
+  }
+
+  if (mafiaAlive >= townAlive) {
+    setPhase("ENDED");
+    return channel.send("🔪 **Mafia Wins!** They have taken over the village.");
+  }
+
+  // Day phase begins only if the game is NOT over
   await startDay(client, channel);
 }
 
@@ -170,9 +185,11 @@ async function checkWinAndContinue(client, channel) {
 
   // Win Condition Checks
   if (mafiaAlive === 0) {
+    setPhase("ENDED");
     return channel.send("🎉 **Civilians Win!** All Mafia members have been eliminated.");
   }
   if (mafiaAlive >= townAlive) {
+    setPhase("ENDED");
     return channel.send("🔪 **Mafia Wins!** They have taken over the village.");
   }
 
