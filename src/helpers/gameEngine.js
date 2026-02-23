@@ -10,6 +10,11 @@ export const startNight = async (client, channel) => {
   nightActions.mafiaTarget = null;
   nightActions.doctorTarget = null;
 
+  await channel.send({
+    content: "🌙 **Night falls on the village.**",
+    files: ["./src/images/NightPhase.png"]
+  });
+
   while (!nightAccomplished) {
     setPhase("NIGHT");
 
@@ -17,10 +22,12 @@ export const startNight = async (client, channel) => {
     const isMafiaAlive = aliveIds.some(id => playerRoles.get(id) === "Mafia");
     const isDoctorAlive = aliveIds.some(id => playerRoles.get(id) === "Doctor");
 
-    await channel.send("🌙 **Night falls on the village.**\n" + 
-                       "The Mafia and Doctor have **30 seconds** to act!");
-
     let timer = 30;
+
+    const timerMsg = await channel.send(
+      `The Mafia and Doctor have **${timer} seconds** to act!`
+    );
+
     while (timer > 0) {
       // Check if roles that are ALIVE have finished their actions
       const mafiaDone = !isMafiaAlive || nightActions.mafiaTarget !== null;
@@ -30,6 +37,16 @@ export const startNight = async (client, channel) => {
 
       await sleep(1000);
       timer--;
+
+      try {
+        await timerMsg.edit(
+          `The Mafia and Doctor have **${timer} seconds** to act!`
+        );
+      } catch (err) {
+        console.error("Night timer edit error:", err);
+        break;
+      }
+
     }
 
     const mafiaFailed = isMafiaAlive && nightActions.mafiaTarget === null;
@@ -39,13 +56,18 @@ export const startNight = async (client, channel) => {
       const slacker = (mafiaFailed && doctorFailed) ? "Both parties" : (mafiaFailed ? "The Mafia" : "The Doctor");
       await channel.send(`💤 **${slacker} failed to act!** The night is resetting... (Targets are saved)`);
       await sleep(3000); 
+      await timerMsg.delete().catch(() => {});
       // Loop repeats: notice we DO NOT set targets to null here anymore.
     } else {
       nightAccomplished = true; 
+      await timerMsg.delete().catch(() => {});
     }
   }
 
-  await channel.send("⌛ **The sun begins to rise...**");
+  await channel.send({
+    content: "⌛ **The sun begins to rise...**",
+    files: ["./src/images/MorningPhase.png"]
+});
   await sleep(3000);
   await resolveNight(client, channel);
 };
@@ -74,10 +96,16 @@ async function resolveNight(client, channel) {
   else if (mafiaTarget) {
     const role = playerRoles.get(mafiaTarget);
     alivePlayers.delete(mafiaTarget);
-    await channel.send(`🩸 **Tragedy strikes!** <@${mafiaTarget}> was found dead. They were a **${role}**.`);
+    await channel.send({
+      content: `🩸 **Tragedy strikes!** <@${mafiaTarget}> was found dead. They were a **${role}**.`,
+      files: ["./src/images/CivillanKilled.png"]
+    });
   } 
   else {
-    await channel.send("🕊️ **A quiet night.** Nothing happened...");
+    await channel.send({
+      content: "🕊️ **A quiet night.** Nothing happened...",
+      files: ["./src/images/QuietNight.png"]
+    });
   }
 
   // NEW: check win condition after night resolves
@@ -87,12 +115,18 @@ async function resolveNight(client, channel) {
 
   if (mafiaAlive === 0) {
     setPhase("ENDED");
-    return channel.send("🎉 **Civilians Win!** All Mafia members have been eliminated.");
+    return channel.send({
+      content: "🎉 **Civilians Win!** All Mafia members have been eliminated.",
+      files: ["./src/images/CivilianWin.png"]
+    });
   }
 
   if (mafiaAlive >= townAlive) {
     setPhase("ENDED");
-    return channel.send("🔪 **Mafia Wins!** They have taken over the village.");
+    return channel.send({
+      content: "🔪 **Mafia Wins!** They have taken over the village.",
+      files: ["./src/images/MafiaWin.png"]
+    });
   }
 
   // Day phase begins only if the game is NOT over
@@ -186,11 +220,17 @@ async function checkWinAndContinue(client, channel) {
   // Win Condition Checks
   if (mafiaAlive === 0) {
     setPhase("ENDED");
-    return channel.send("🎉 **Civilians Win!** All Mafia members have been eliminated.");
+    return channel.send({
+      content: "🎉 **Civilians Win!** All Mafia members have been eliminated.",
+      files: ["./src/images/CivilianWin.png"]
+    });
   }
   if (mafiaAlive >= townAlive) {
     setPhase("ENDED");
-    return channel.send("🔪 **Mafia Wins!** They have taken over the village.");
+    return channel.send({
+      content: "🔪 **Mafia Wins!** They have taken over the village.",
+      files: ["./src/images/MafiaWin.png"]
+    });
   }
 
   // If game continues, loop back to Night
