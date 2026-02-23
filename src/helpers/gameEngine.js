@@ -94,6 +94,18 @@ async function resolveNight(client, channel) {
   else if (mafiaTarget) {
     const role = playerRoles.get(mafiaTarget);
     alivePlayers.delete(mafiaTarget);
+    try {
+      const victim = await client.users.fetch(mafiaTarget);
+
+      const mafiaIds = [...alivePlayers].filter(id => playerRoles.get(id) === "Mafia");
+
+      await victim.send(
+        `💀 You were killed during the night.\n\n` +
+        `The Mafia member responsible was: <@${mafiaIds[0]}>`
+      );
+    } catch (err) {
+      console.error("Failed to DM victim:", err);
+    }
     await channel.send({
       content: `🩸 **Tragedy strikes!** <@${mafiaTarget}> was found dead. They were a **${role}**.`,
       files: ["./src/images/CivillanKilled.png"]
