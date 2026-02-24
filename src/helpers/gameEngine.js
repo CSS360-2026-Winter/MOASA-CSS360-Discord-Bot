@@ -1,4 +1,4 @@
-import { alivePlayers, setPhase, nightActions, playerRoles, votes} from "./gameState.js";
+import { alivePlayers, setPhase, nightActions, playerRoles, votes, setGameRunning} from "./gameState.js";
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -78,7 +78,6 @@ async function resolveNight(client, channel) {
 
   if (mafiaTarget && mafiaTarget === doctorTarget) {
     try {
-      // Trying the most likely path based on your folder structure
       const imagePath = "./src/helpers/doctor-save.png";
       
       await channel.send({
@@ -86,7 +85,6 @@ async function resolveNight(client, channel) {
         files: [imagePath] 
       });
     } catch (error) {
-      // This will print the exact reason in your terminal (black screen)
       console.error("❌ Image upload failed. Check this path:", error.path || "Unknown path");
       console.error("Full Error:", error.message);
 
@@ -96,6 +94,18 @@ async function resolveNight(client, channel) {
   else if (mafiaTarget) {
     const role = playerRoles.get(mafiaTarget);
     alivePlayers.delete(mafiaTarget);
+    try {
+      const victim = await client.users.fetch(mafiaTarget);
+
+      const mafiaIds = [...alivePlayers].filter(id => playerRoles.get(id) === "Mafia");
+
+      await victim.send(
+        `💀 You were killed during the night.\n\n` +
+        `The Mafia member responsible was: <@${mafiaIds[0]}>`
+      );
+    } catch (err) {
+      console.error("Failed to DM victim:", err);
+    }
     await channel.send({
       content: `🩸 **Tragedy strikes!** <@${mafiaTarget}> was found dead. They were a **${role}**.`,
       files: ["./src/images/CivillanKilled.png"]
@@ -115,6 +125,7 @@ async function resolveNight(client, channel) {
 
   if (mafiaAlive === 0) {
     setPhase("ENDED");
+    setGameRunning(false);
     return channel.send({
       content: "🎉 **Civilians Win!** All Mafia members have been eliminated.",
       files: ["./src/images/CivilianWin.png"]
@@ -123,6 +134,7 @@ async function resolveNight(client, channel) {
 
   if (mafiaAlive >= townAlive) {
     setPhase("ENDED");
+    setGameRunning(false);
     return channel.send({
       content: "🔪 **Mafia Wins!** They have taken over the village.",
       files: ["./src/images/MafiaWin.png"]
@@ -220,6 +232,7 @@ async function checkWinAndContinue(client, channel) {
   // Win Condition Checks
   if (mafiaAlive === 0) {
     setPhase("ENDED");
+    setGameRunning(false);
     return channel.send({
       content: "🎉 **Civilians Win!** All Mafia members have been eliminated.",
       files: ["./src/images/CivilianWin.png"]
@@ -227,6 +240,7 @@ async function checkWinAndContinue(client, channel) {
   }
   if (mafiaAlive >= townAlive) {
     setPhase("ENDED");
+    setGameRunning(false);
     return channel.send({
       content: "🔪 **Mafia Wins!** They have taken over the village.",
       files: ["./src/images/MafiaWin.png"]
