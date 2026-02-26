@@ -39,6 +39,8 @@ Sprint 2 focused on completing the core Mafia game functionality while improving
 
 Completed features include:
 - Implemented a real-time countdown timer during the Night phase
+- Implemented a real-time coutdown timer during the voting(mini)
+- Added specific image for doctor save person who was killed by mafia and voting(mini)
 - Prevented duplicate Night phase images on reset
 - Added phase-specific images for Night, Morning, Kill, Win, and Lose states
 - Integrated role-specific images into the /role command
@@ -127,6 +129,7 @@ You can now run the code in the repository using the command line by typing the 
 
 ## Remember: Keep your repository private if you have a .env file in it! Keys and tokens are passwords!
 ## Remember: If you make changes in codespaces, commit and push when done!
+
 
 
 
