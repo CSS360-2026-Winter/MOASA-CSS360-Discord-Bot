@@ -33,6 +33,16 @@ Completed features include:
 - Direct messages sent to players when enough users have joined
 
 
+## Sprint 2 (Version2.0)
+
+Sprint 2 focused on completing the core Mafia game functionality while improving interactivity, visual feedback, and overall game stability.
+
+Completed features include:
+- Implemented a real-time countdown timer during the Night phase
+- Prevented duplicate Night phase images on reset
+- Added phase-specific images for Night, Morning, Kill, Win, and Lose states
+- Integrated role-specific images into the /role command
+
 ## Course Context
 This project is part of CSS360 and is under active development.
 The README will be updated as the project design becomes clearer.
@@ -117,5 +127,6 @@ You can now run the code in the repository using the command line by typing the 
 
 ## Remember: Keep your repository private if you have a .env file in it! Keys and tokens are passwords!
 ## Remember: If you make changes in codespaces, commit and push when done!
+
 
 
