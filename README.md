@@ -49,6 +49,21 @@ Completed features include:
 This project is part of CSS360 and is under active development.
 The README will be updated as the project design becomes clearer.
 
+## Commands
+- /join: Join recruitment for the next Mafia match
+- /role: View your assigned role privately
+- /vote <user>: Vote to eliminate a player during the Day phase
+- /stats: View lifetime stats leaderboard and recent game breakdown (last 2 games)
+
+## Stats Tracking
+The bot tracks lifetime player stats across matches and stores them persistently in:
+- data/stats.json
+
+Recent games are recorded using per-game snapshots so /stats can show what happened in the last matches.
+
+Note:
+- The data/ folder is runtime output and should not be committed to git. Add `data/` to .gitignore.
+
 
 # Javascript Discord Welcome MemeBot with GitHub Codespaces
 
