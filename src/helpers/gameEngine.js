@@ -78,7 +78,7 @@ async function resolveNight(client, channel) {
 
   if (mafiaTarget && mafiaTarget === doctorTarget) {
     try {
-      const imagePath = "./src/helpers/doctor-save.png";
+      const imagePath = "./src/images/doctor-save.png";
       
       await channel.send({
         content: "🏥 **The Mafia attacked last night, but the Doctor saved the victim!** No one died.",
@@ -151,7 +151,11 @@ async function startDay(client, channel) {
   votes.clear(); // Ensure votes are empty at the start of the day
 
   let timer = 60; // Initial voting duration
-  const voteImagePath = "./src/helpers/vote-processing.png"; // ✅ Path to your image
+  const voteImagePath = "./src/images/vote-processing.png"; // ✅ Path to your image
+
+  // --- [ADD THIS: Generate Alive List for Voting] ---
+  const aliveIds = Array.from(alivePlayers.keys());
+  const aliveList = aliveIds.map(id => `• <@${id}>`).join("\n");
 
   // 1. Send initial message WITH the image
   const votingMsg = await channel.send({
@@ -160,6 +164,11 @@ async function startDay(client, channel) {
              `⌛ Voting closes in **${timer}** seconds!`,
     files: [voteImagePath] // ✅ Image added here
   });
+
+  await channel.send(
+    `👥 **Players available for voting (${aliveIds.length}):**\n` + 
+    (aliveList || "_No one is left alive._")
+  );
 
   // 2. Countdown loop
   while (timer > 0) {
@@ -220,6 +229,16 @@ async function resolveDay(client, channel) {
   alivePlayers.delete(eliminatedId);
 
   await channel.send(`⚖️ By majority vote, <@${eliminatedId}> has been eliminated. They were the **${role}**.`);
+
+  // --- add alivelist ---
+  const aliveIds = Array.from(alivePlayers.keys());
+  const aliveList = aliveIds.map(id => `• <@${id}>`).join("\n");
+
+  await channel.send(
+    `👥 **Current Survivors (${aliveIds.length}):**\n` + 
+    (aliveList || "_No one is left alive._")
+  );
+  // ----------------------
 
   await checkWinAndContinue(client, channel);
 }

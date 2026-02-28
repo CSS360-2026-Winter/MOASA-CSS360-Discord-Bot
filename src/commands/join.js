@@ -35,8 +35,10 @@ export default {
   // Start joining(after first person joined)
   if (joinOpen) {
     if (joinedPlayers.has(userId)) {
-      return interaction.reply({ content: "You already joined!", ephemeral: true });
-    }
+      return interaction.reply({ content: `⚠️ <@${userId}>, You already join. please don't type join command again!`, 
+      ephemeral: true 
+    });
+  }
       
     joinedPlayers.add(userId);
       
