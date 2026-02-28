@@ -50,10 +50,21 @@ This project is part of CSS360 and is under active development.
 The README will be updated as the project design becomes clearer.
 
 ## Commands
-- /join: Join recruitment for the next Mafia match
-- /role: View your assigned role privately
-- /vote <user>: Vote to eliminate a player during the Day phase
-- /stats: View lifetime stats leaderboard and recent game breakdown (last 2 games)
+
+### Mafia Game
+- `/join` Join the Mafia game (starts or joins recruitment)
+- `/role` View your Mafia role (private)
+- `/vote <user>` Vote to eliminate a player (Day phase only)
+- `/kill <user>` Mafia: eliminate a player (Night phase only)
+- `/save <user>` Doctor: protect a player (Night phase only)
+- `/mycommands` List commands for your role
+- `/reset` Reset the Mafia game (admin only)
+- `/mafia role` View all roles in the Mafia game
+- `/rules` View the rules of the Mafia game
+- `/stats` Show player stats across all games and recent games
+
+### Fun
+- `/meme` Get a meme
 
 ## Stats Tracking
 The bot tracks lifetime player stats across matches and stores them persistently in:

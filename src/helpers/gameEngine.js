@@ -84,7 +84,7 @@ export const startNight = async (client, channel) => {
   nightActions.doctorTarget = null;
 
   await sendWithOptionalFiles(channel, {
-    content: "Night falls on the village.",
+    content: "🌙 Night falls on the village.",
     files: ["./src/images/NightPhase.png"]
   });
 
@@ -107,7 +107,7 @@ export const startNight = async (client, channel) => {
     let timer = 30;
 
     const timerMsg = await channel.send(
-      `The Mafia and Doctor have ${timer} seconds to act.`
+      `⏳ The Mafia and Doctor have ${timer} seconds to act.`
     );
 
     // Countdown. Break early if all required actions are completed.
@@ -122,7 +122,7 @@ export const startNight = async (client, channel) => {
 
       try {
         await timerMsg.edit(
-          `The Mafia and Doctor have ${timer} seconds to act.`
+          `⏳ The Mafia and Doctor have ${timer} seconds to act.`
         );
       } catch (err) {
         // If we cannot edit the message, stop editing but keep the game moving.
@@ -140,7 +140,7 @@ export const startNight = async (client, channel) => {
         ? "Both parties"
         : (mafiaFailed ? "The Mafia" : "The Doctor");
 
-      await channel.send(`${slacker} failed to act. The night is resetting. Targets are saved.`);
+      await channel.send(`💤 ${slacker} failed to act. The night is resetting. Targets are saved.`);
       await sleep(3000);
       await timerMsg.delete().catch(() => {});
     } else {
@@ -150,7 +150,7 @@ export const startNight = async (client, channel) => {
   }
 
   await sendWithOptionalFiles(channel, {
-    content: "The sun begins to rise.",
+    content: "⌛ The sun begins to rise.",
     files: ["./src/images/MorningPhase.png"]
   });
 
@@ -181,7 +181,7 @@ async function resolveNight(client, channel) {
     if (doctorIds.length > 0) incStat(doctorIds[0], "savesAsDoctor", 1);
 
     await sendWithOptionalFiles(channel, {
-      content: "The Mafia attacked last night, but the Doctor saved the victim. No one died.",
+      content: "🏥 The Mafia attacked last night, but the Doctor saved the victim. No one died.",
       files: ["./src/helpers/doctor-save.png"]
     });
   }
@@ -215,14 +215,14 @@ async function resolveNight(client, channel) {
     }
 
     await sendWithOptionalFiles(channel, {
-      content: `<@${mafiaTarget}> was found dead. They were the ${role}.`,
+      content: `🩸 <@${mafiaTarget}> was found dead. They were the ${role}.`,
       files: ["./src/images/CivillanKilled.png"]
     });
   }
   // Case 3: Mafia did not attack (or no mafia alive)
   else {
     await sendWithOptionalFiles(channel, {
-      content: "A quiet night. Nothing happened.",
+      content: "🕊️ A quiet night. Nothing happened.",
       files: ["./src/images/QuietNight.png"]
     });
   }
@@ -238,7 +238,7 @@ async function resolveNight(client, channel) {
     finalizeGameSnapshotIfAny();
 
     return sendWithOptionalFiles(channel, {
-      content: "Civilians win. All Mafia members have been eliminated.",
+      content: "🎉 Civilians win. All Mafia members have been eliminated.",
       files: ["./src/images/CivilianWin.png"]
     });
   }
@@ -249,7 +249,7 @@ async function resolveNight(client, channel) {
     finalizeGameSnapshotIfAny();
 
     return sendWithOptionalFiles(channel, {
-      content: "Mafia wins. They have taken over the village.",
+      content: "🔪 Mafia wins. They have taken over the village.",
       files: ["./src/images/MafiaWin.png"]
     });
   }
@@ -281,7 +281,7 @@ async function startDay(client, channel) {
   // This uses the safe sender so missing images do not crash the match.
   const votingMsg = await sendWithOptionalFiles(channel, {
     content:
-      `Day Phase begins.\n` +
+      `☀️ Day Phase begins.\n` +
       `Players discuss and use /vote to identify the Mafia.\n` +
       `Voting closes in ${timer} seconds.`,
     files: [voteImagePath]
@@ -298,7 +298,7 @@ async function startDay(client, channel) {
     try {
       await votingMsg.edit({
         content:
-          `Day Phase begins.\n` +
+          `☀️ Day Phase begins.\n` +
           `Players discuss and use /vote to identify the Mafia.\n` +
           `Voting closes in ${timer} seconds.`
       });
@@ -310,7 +310,7 @@ async function startDay(client, channel) {
   }
 
   await votingMsg.edit({
-    content: "Voting has closed. Processing votes."
+    content: "⌛ Voting has closed. Processing votes."
   });
 
   await sleep(2000);
@@ -329,7 +329,7 @@ async function startDay(client, channel) {
 */
 async function resolveDay(client, channel) {
   if (votes.size === 0) {
-    await channel.send("No one voted. Voting again.");
+    await channel.send("🤷 No one voted. Voting again.");
     return startDay(client, channel);
   }
 
@@ -346,7 +346,7 @@ async function resolveDay(client, channel) {
 
   // Tie means revote
   if (candidates.length > 1) {
-    await channel.send("It is a tie. Vote again.");
+    await channel.send("⚖️ It is a tie. Vote again.");
     await sleep(3000);
     return startDay(client, channel);
   }
@@ -360,7 +360,7 @@ async function resolveDay(client, channel) {
   // Stat for being voted out
   incStat(eliminatedId, "timesVotedOut", 1);
 
-  await channel.send(`By majority vote, <@${eliminatedId}> has been eliminated. They were the ${role}.`);
+  await channel.send(`⚖️ By majority vote, <@${eliminatedId}> has been eliminated. They were the ${role}.`);
 
   await checkWinAndContinue(client, channel);
 }
@@ -384,7 +384,7 @@ async function checkWinAndContinue(client, channel) {
     finalizeGameSnapshotIfAny();
 
     return sendWithOptionalFiles(channel, {
-      content: "Civilians win. All Mafia members have been eliminated.",
+      content: "🎉 Civilians win. All Mafia members have been eliminated.",
       files: ["./src/images/CivilianWin.png"]
     });
   }
@@ -395,13 +395,13 @@ async function checkWinAndContinue(client, channel) {
     finalizeGameSnapshotIfAny();
 
     return sendWithOptionalFiles(channel, {
-      content: "Mafia wins. They have taken over the village.",
+      content: "🔪 Mafia wins. They have taken over the village.",
       files: ["./src/images/MafiaWin.png"]
     });
   }
 
   // No win yet, start next Night
-  await channel.send("The sun sets. Prepare for the next night.");
+  await channel.send("🌙 The sun sets. Prepare for the next night.");
   await sleep(3000);
   await startNight(client, channel);
 }
