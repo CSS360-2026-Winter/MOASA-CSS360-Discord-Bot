@@ -56,18 +56,14 @@ export default {
       });
     }
 
-    // First person starts recruitment
-    joinOpen = true;
-
-    // If something crashed previously, clean up any leftover snapshot
-    if (currentGameId) {
-      cancelGameSnapshot(currentGameId);
-      setCurrentGameId(null);
-    }
-
-    // Full reset so roles and votes cannot leak across matches
-    resetGame();
-
+  // Start joining(after first person joined)
+  if (joinOpen) {
+    if (joinedPlayers.has(userId)) {
+      return interaction.reply({ content: `⚠️ <@${userId}>, You already join. please don't type join command again!`, 
+      ephemeral: true 
+    });
+  }
+      
     joinedPlayers.add(userId);
 
     let remaining = 15;

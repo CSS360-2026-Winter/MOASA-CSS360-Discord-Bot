@@ -175,17 +175,25 @@ async function resolveNight(client, channel) {
 
   // Case 1: Mafia attacked and Doctor saved the same target
   if (mafiaTarget && mafiaTarget === doctorTarget) {
+    
     // Credit one alive Doctor for the save.
     // If you support multiple doctors later, you may want to credit the actual acting doctor.
     const doctorIds = [...alivePlayers].filter(id => playerRoles.get(id) === "Doctor");
     if (doctorIds.length > 0) incStat(doctorIds[0], "savesAsDoctor", 1);
+    try {
+      const imagePath = "./src/images/doctor-save.png";
+      
+      await channel.send({
+        content: "🏥 **The Mafia attacked last night, but the Doctor saved the victim!** No one died.",
+        files: [imagePath] 
+      });
+    } catch (error) {
+      console.error("❌ Image upload failed. Check this path:", error.path || "Unknown path");
+      console.error("Full Error:", error.message);
 
-    await sendWithOptionalFiles(channel, {
-      content: "🏥 The Mafia attacked last night, but the Doctor saved the victim. No one died.",
-      files: ["./src/helpers/doctor-save.png"]
-    });
-  }
-  // Case 2: Mafia attacked and the target was not saved
+      await channel.send("🏥 **The Mafia attacked last night, but the Doctor saved the victim!** No one died.");
+    }
+  } 
   else if (mafiaTarget) {
     const role = playerRoles.get(mafiaTarget);
 
@@ -270,12 +278,14 @@ async function resolveNight(client, channel) {
 */
 async function startDay(client, channel) {
   setPhase("DAY");
-
-  // Reset the vote map each day so old votes cannot leak into the next day.
   votes.clear();
 
-  let timer = 60;
-  const voteImagePath = "./src/helpers/vote-processing.png";
+  let timer = 60; // Initial voting duration
+  const voteImagePath = "./src/images/vote-processing.png"; // ✅ Path to your image
+
+  // --- [ADD THIS: Generate Alive List for Voting] ---
+  const aliveIds = Array.from(alivePlayers.keys());
+  const aliveList = aliveIds.map(id => `• <@${id}>`).join("\n");
 
   // Send the initial Day Phase message.
   // This uses the safe sender so missing images do not crash the match.
@@ -287,7 +297,12 @@ async function startDay(client, channel) {
     files: [voteImagePath]
   });
 
-  // Countdown loop for voting.
+  await channel.send(
+    `👥 **Players available for voting (${aliveIds.length}):**\n` + 
+    (aliveList || "_No one is left alive._")
+  );
+
+  // 2. Countdown loop
   while (timer > 0) {
     // End early if everyone alive has voted.
     if (votes.size === alivePlayers.size && alivePlayers.size > 0) break;
@@ -361,6 +376,16 @@ async function resolveDay(client, channel) {
   incStat(eliminatedId, "timesVotedOut", 1);
 
   await channel.send(`⚖️ By majority vote, <@${eliminatedId}> has been eliminated. They were the ${role}.`);
+
+  // --- add alivelist ---
+  const aliveIds = Array.from(alivePlayers.keys());
+  const aliveList = aliveIds.map(id => `• <@${id}>`).join("\n");
+
+  await channel.send(
+    `👥 **Current Survivors (${aliveIds.length}):**\n` + 
+    (aliveList || "_No one is left alive._")
+  );
+  // ----------------------
 
   await checkWinAndContinue(client, channel);
 }
