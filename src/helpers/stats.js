@@ -36,6 +36,7 @@ function ensurePlayer(db, userId) {
       savesAsDoctor: 0,
       roleMafia: 0,
       roleDoctor: 0,
+      roleFortuneTeller: 0,
       roleCivilian: 0
     };
   }
@@ -59,6 +60,7 @@ function cloneStatObj(s) {
     savesAsDoctor: s.savesAsDoctor ?? 0,
     roleMafia: s.roleMafia ?? 0,
     roleDoctor: s.roleDoctor ?? 0,
+    roleFortuneTeller: s.roleFortuneTeller ?? 0,
     roleCivilian: s.roleCivilian ?? 0
   };
 }

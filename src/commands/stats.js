@@ -6,6 +6,7 @@ function lifetimeScore(s) {
     (s.gamesPlayed * 2) +
     (s.killsAsMafia * 3) +
     (s.savesAsDoctor * 3) +
+    (s.divineSuccesses * 3) +
     (s.timesVotedOut * 1) +
     (s.timesKilled * 1)
   );
@@ -15,6 +16,7 @@ function gameScoreDelta(d) {
   return (
     (d.killsAsMafia * 3) +
     (d.savesAsDoctor * 3) +
+    (d.divineSuccesses * 3) +
     (d.timesVotedOut * 1) +
     (d.timesKilled * 1)
   );
@@ -29,7 +31,8 @@ function fmtLifetimeLine(id, s, rank) {
     ` | votedOut ${s.timesVotedOut}` +
     ` | killed ${s.timesKilled}` +
     ` | mafiaKills ${s.killsAsMafia}` +
-    ` | doctorSaves ${s.savesAsDoctor}`
+    ` | doctorSaves ${s.savesAsDoctor}` +
+    ` | divines ${s.divineSuccesses ?? 0}`
   );
 }
 
@@ -41,7 +44,8 @@ function fmtDeltaLine(id, d, rank) {
     ` | votedOut ${d.timesVotedOut}` +
     ` | killed ${d.timesKilled}` +
     ` | mafiaKills ${d.killsAsMafia}` +
-    ` | doctorSaves ${d.savesAsDoctor}`
+    ` | doctorSaves ${d.savesAsDoctor}` +
+    ` | divines ${d.divineSuccesses ?? 0}`
   );
 }
 

@@ -23,6 +23,10 @@ export default {
         "• The protected player survives if targeted by the Mafia\n" +
         "• You may not choose to protect yourself\n\n" +
 
+        "🔮 **Fortune Teller**\n" +
+        "• Each night, choose one player to divine their true identity.\n" +
+        "• You will learn whether they are Mafia or not.\n\n" +
+
         "👥 **Civilians**\n" +
         "• No special abilities\n" +
         "• Work together to identify the Mafia\n\n" +

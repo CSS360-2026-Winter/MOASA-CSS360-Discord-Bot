@@ -8,11 +8,19 @@ export const setGameRunning = (value) => {
 };
 
 export let currentPhase = "PRE_GAME";
-export const setPhase = (phase) => { currentPhase = phase; };
+export const setPhase = (newPhase) => {
+  currentPhase = newPhase;
+  // console.log(`[DEBUG] Phase changed to: ${currentPhase}`); 
+};
+
+export const getCurrentPhase = () => {
+  return currentPhase;
+};
 
 export let nightActions = {
   mafiaTarget: null,
-  doctorTarget: null
+  doctorTarget: null,
+  fortuneTellerTarget: null
 };
 
 export let votes = new Map();
@@ -29,7 +37,7 @@ export function resetGame() {
   gameRunning = false;
   currentPhase = "PRE_GAME";
 
-  nightActions = { mafiaTarget: null, doctorTarget: null };
+  nightActions = { mafiaTarget: null, doctorTarget: null , fortuneTellerTarget: null};
   votes.clear();
 
   currentGameId = null;

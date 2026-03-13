@@ -4,6 +4,7 @@ import { playerRoles } from "../helpers/gameState.js";
 export const ROLE_COMMANDS = {
   "Mafia": "🕵️ **Mafia Commands:**\n• `/kill` - Eliminate a player in this round.",
   "Doctor": "🩺 **Doctor Commands:**\n• `/save` - Choose a player to protect.",
+  "Fortune Teller": "🔮 **Fortune Teller Commands:**\n• `/divine` - Peer into your crystal ball to reveal a player's true nature.",
   "Civilian": "👥 **Civilian Commands:**\n• '/vote [username]' - Vote for who you think is the Mafia."
 };
 

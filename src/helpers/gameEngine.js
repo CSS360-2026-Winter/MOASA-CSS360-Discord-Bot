@@ -27,7 +27,7 @@ let dayCount = 1; //Day tracking variable
   - alivePlayers: Set of userIds still alive
   - playerRoles: Map userId -> role string
   - votes: Map voterId -> targetId (only used during Day)
-  - nightActions: { mafiaTarget, doctorTarget }
+  - nightActions: { mafiaTarget, doctorTarget ,fortuneTellerTarget}
   - currentGameId: string used by stats snapshots
 */
 
@@ -73,30 +73,29 @@ function finalizeGameSnapshotIfAny() {
 
   Responsibilities:
   - Set phase to NIGHT
-  - Reset the night targets for this night (mafiaTarget and doctorTarget)
-  - Run a timer so Mafia and Doctor can act
+  - Reset the night targets for this night (mafiaTarget, doctorTarget and fortuneTellerTarget)
+  - Run a timer so Mafia, Doctor and Fortune Teller can act
   - If required actions were not taken, reset the timer but keep any targets already chosen
   - Once night actions are finished, resolve the outcomes and move to Day
 */
 export const startNight = async (client, channel) => {
   let nightAccomplished = false;
+  setPhase("NIGHT");
 
   //Display day header at night start
-  if(dayCount == 1){
-      await channel.send(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🌙 **DAY 1 : NIGHT PHASE**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-  }else{
-      await channel.send(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🌙 **NIGHT PHASE**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-  }
+  const header = dayCount === 1 ? "DAY 1 : NIGHT PHASE" : "NIGHT PHASE";
+  await channel.send(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🌙 **${header}**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+
+  await sendWithOptionalFiles(channel, {
+    content: "🌙 Night falls on the village.",
+    files: ["./src/images/NightPhase.png"]
+  })
 
   // Reset targets at the start of each night.
   // Important: this happens once per night, not once per match.
   nightActions.mafiaTarget = null;
   nightActions.doctorTarget = null;
-
-  await sendWithOptionalFiles(channel, {
-    content: "🌙 Night falls on the village.",
-    files: ["./src/images/NightPhase.png"]
-  });
+  nightActions.fortuneTellerTarget = null;
 
   /*
     Night loop:
@@ -113,26 +112,28 @@ export const startNight = async (client, channel) => {
     // Only require an action if that role exists AND is alive.
     const isMafiaAlive = aliveIds.some(id => playerRoles.get(id) === "Mafia");
     const isDoctorAlive = aliveIds.some(id => playerRoles.get(id) === "Doctor");
+    const isFortuneTellerAlive = aliveIds.some(id => playerRoles.get(id) === "Fortune Teller");
 
     let timer = 30;
 
     const timerMsg = await channel.send(
-      `⏳ The Mafia and Doctor have ${timer} seconds to act.`
+      `⏳ The Mafia, Doctor, and Fortune Teller have ${timer} seconds to act.`
     );
 
     // Countdown. Break early if all required actions are completed.
     while (timer > 0) {
       const mafiaDone = !isMafiaAlive || nightActions.mafiaTarget !== null;
       const doctorDone = !isDoctorAlive || nightActions.doctorTarget !== null;
+      const fortuneTellerDone = !isFortuneTellerAlive || nightActions.fortuneTellerTarget !== null;
 
-      if (mafiaDone && doctorDone) break;
+      if (mafiaDone && doctorDone && fortuneTellerDone) break;
 
       await sleep(1000);
       timer--;
 
       try {
         await timerMsg.edit(
-          `⏳ The Mafia and Doctor have ${timer} seconds to act.`
+          `⏳ The Mafia, Doctor, and Fortune Teller have ${timer} seconds to act.`
         );
       } catch (err) {
         // If we cannot edit the message, stop editing but keep the game moving.
@@ -144,15 +145,21 @@ export const startNight = async (client, channel) => {
     // If a role was required and did not act, the night restarts.
     const mafiaFailed = isMafiaAlive && nightActions.mafiaTarget === null;
     const doctorFailed = isDoctorAlive && nightActions.doctorTarget === null;
+    const fortuneTellerFailed = isFortuneTellerAlive && nightActions.fortuneTellerTarget === null;
 
-    if (mafiaFailed || doctorFailed) {
-      const slacker = (mafiaFailed && doctorFailed)
-        ? "Both parties"
-        : (mafiaFailed ? "The Mafia" : "The Doctor");
+    if (mafiaFailed || doctorFailed || fortuneTellerFailed) {
 
-      await channel.send(`💤 ${slacker} failed to act. The night is resetting. Targets are saved.`);
+      let slackers = [];
+      if (mafiaFailed) slackers.push("The Mafia");
+      if (doctorFailed) slackers.push("The Doctor");
+      if (fortuneTellerFailed) slackers.push("The Fortune Teller");
+
+      let slackerText = slackers.length > 2 ? "Multiple parties" : slackers.join(" and ");
+
+      await channel.send(`💤 ${slackerText} failed to act. The night is resetting. Targets are saved.`);
       await sleep(3000);
       await timerMsg.delete().catch(() => {});
+
     } else {
       nightAccomplished = true;
       await timerMsg.delete().catch(() => {});
@@ -168,7 +175,7 @@ export const startNight = async (client, channel) => {
 
   Responsibilities:
   - Apply night outcomes based on nightActions
-  - Update stats (killsAsMafia, savesAsDoctor, timesKilled)
+  - Update stats (killsAsMafia, savesAsDoctor, divineSuccesses, timesKilled)
   - Remove a killed player from alivePlayers
   - Check win conditions AFTER night outcomes
   - If no win, begin Day
@@ -187,7 +194,7 @@ async function resolveNight(client, channel) {
 
   await sleep(3000);
 
-  const { mafiaTarget, doctorTarget } = nightActions;
+  const { mafiaTarget, doctorTarget, fortuneTellerTarget } = nightActions;
 
   // Case 1: Mafia attacked and Doctor saved the same target
   if (mafiaTarget && mafiaTarget === doctorTarget) {
@@ -249,6 +256,17 @@ async function resolveNight(client, channel) {
       content: "🕊️ A quiet night. Nothing happened.",
       files: ["./src/images/QuietNight.png"]
     });
+  }
+
+  if (nightActions.fortuneTellerTarget) {
+    const targetRole = playerRoles.get(nightActions.fortuneTellerTarget);
+    // If the target investigated by the Fortune Teller was Mafia, credit them.
+    if (targetRole === "Mafia") {
+      const ftIds = [...alivePlayers].filter(id => playerRoles.get(id) === "Fortune Teller");
+      if (ftIds.length > 0) {
+        incStat(ftIds[0], "divineSuccesses", 1);
+      }
+    }
   }
 
   // Win check after night outcomes
@@ -442,7 +460,7 @@ async function checkWinAndContinue(client, channel) {
   }
 
   // No win yet, start next Night
-  await channel.send("🌙 The sun sets. Prepare for the next night.");
+  await channel.send("🌅 The sun sets. Prepare for the next night.");
   await sleep(3000);
   await startNight(client, channel);
 }

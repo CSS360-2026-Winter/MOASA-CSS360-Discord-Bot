@@ -13,6 +13,12 @@ const ROLES = {
     description: "Each night, choose one player to protect. You cannot protect yourself.",
     win: "Identify and eliminate all Mafia members."
   },
+  fortuneTeller: {
+    name: "🔮 Fortune Teller",
+    faction: "Civilians",
+    description: "Each night, choose one player to divine their true identity.",
+    win: "Identify and eliminate all Mafia members."
+  },
   civilian: {
     name: "👥 Civilian",
     faction: "Civilians",

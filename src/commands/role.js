@@ -6,6 +6,7 @@ import { ROLE_COMMANDS } from "./roleCommands.js"
 const ROLE_IMAGES = {
   Mafia: "Mafia.png",
   Doctor: "Doctor.png",
+  "Fortune Teller": "FortuneTeller.png",
   Civilian: "Civilian.png",
 };
 

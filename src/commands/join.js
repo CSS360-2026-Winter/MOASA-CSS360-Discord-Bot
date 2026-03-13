@@ -122,6 +122,7 @@ export default {
       incStat(id, "gamesPlayed", 1);
       if (role === "Mafia") incStat(id, "roleMafia", 1);
       else if (role === "Doctor") incStat(id, "roleDoctor", 1);
+      else if (role == "Fortune Teller") incStat(id, "roleFortuneTeller", 1);
       else incStat(id, "roleCivilian", 1);
     }
 
