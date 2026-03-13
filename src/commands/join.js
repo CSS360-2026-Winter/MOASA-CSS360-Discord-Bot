@@ -42,11 +42,13 @@ export default {
       });
     }
 
-    // Joining is already open
-    if (joinOpen) {
-      if (joinedPlayers.has(userId)) {
-        return interaction.reply({ content: "You already joined.", ephemeral: true });
-      }
+    // Start joining(after first person joined)
+  if (joinOpen) {
+    if (joinedPlayers.has(userId)) {
+      return interaction.reply({ content: `⚠️ <@${userId}>, You have already joined the game. Please don't type join command again!`, 
+      ephemeral: true 
+    });
+  }
 
       joinedPlayers.add(userId);
 
@@ -56,14 +58,10 @@ export default {
       });
     }
 
-  // Start joining(after first person joined)
-  if (joinOpen) {
-    if (joinedPlayers.has(userId)) {
-      return interaction.reply({ content: `⚠️ <@${userId}>, You already join. please don't type join command again!`, 
-      ephemeral: true 
-    });
-  }
-      
+    // Start joining (This block was missing a closing bracket at the end)
+    joinOpen = true; // Added this so the loop actually triggers correctly
+
+    joinedPlayers.clear(); //Clear the last list
     joinedPlayers.add(userId);
 
     let remaining = 15;
@@ -134,8 +132,8 @@ export default {
     beginGameSnapshot(gameId, joinedPlayers);
 
     await startNight(interaction.client, interaction.channel);
-  }
-};
+  } // Added closing bracket for execute function
+}; // Added closing bracket for export default
 
 function generateJoinText(timeLeft, client, players) {
   return (
