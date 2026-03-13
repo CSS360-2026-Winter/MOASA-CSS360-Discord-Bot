@@ -82,7 +82,11 @@ export const startNight = async (client, channel) => {
   let nightAccomplished = false;
 
   //Display day header at night start
-  await channel.send(`\n━━━━━━━━━━━━━━━\n🌙 **DAY ${dayCount} : NIGHT PHASE**\n━━━━━━━━━━━━━━━`);
+  if(dayCount == 1){
+      await channel.send(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🌙 **DAY 1 : NIGHT PHASE**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+  }else{
+      await channel.send(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🌙 **NIGHT PHASE**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+  }
 
   // Reset targets at the start of each night.
   // Important: this happens once per night, not once per match.
@@ -155,11 +159,6 @@ export const startNight = async (client, channel) => {
     }
   }
 
-  await sendWithOptionalFiles(channel, {
-    content: "⌛ The sun begins to rise.",
-    files: ["./src/images/MorningPhase.png"]
-  });
-
   await sleep(3000);
   await resolveNight(client, channel);
 };
@@ -179,7 +178,14 @@ async function resolveNight(client, channel) {
 
   //Increment day and show header
   dayCount++;
-  await channel.send(`\n━━━━━━━━━━━━━━━\n☀️ **DAY ${dayCount} : MORNING PHASE**\n━━━━━━━━━━━━━━━`);
+  await channel.send(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n☀️ **DAY ${dayCount} : MORNING PHASE**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+
+    await sendWithOptionalFiles(channel, {
+    content: "⌛ The sun begins to rise.",
+    files: ["./src/images/MorningPhase.png"]
+  });
+
+  await sleep(3000);
 
   const { mafiaTarget, doctorTarget } = nightActions;
 
