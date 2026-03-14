@@ -52,6 +52,17 @@ Game Integrity & Fair Play Enhancements:
 - Dead players receive a private notification if they attempt to speak
 - Night victims receive a private DM revealing the Mafia member responsible
 
+
+## Sprint 3 (Version2.1)
+
+Sprint 3 focuses on modernizing the user experience and expanding gameplay depth through new interaction methods and advanced role logic.
+
+Completed features include:
+- Added the **Fortune Teller** role (Civilian faction).
+- Implemented the `/divine` command, allowing players to investigate a target's role during the Night phase.
+- Integrated divination success tracking into the global scoring and stats system.
+- Implemented a dynamic **Day Counter** (e.g., "DAY 1", "DAY 2") to help players track game progress.
+
 ## Course Context
 This project is part of CSS360 and is under active development.
 The README will be updated as the project design becomes clearer.
@@ -64,6 +75,7 @@ The README will be updated as the project design becomes clearer.
 - `/vote <user>` Vote to eliminate a player (Day phase only)
 - `/kill <user>` Mafia: eliminate a player (Night phase only)
 - `/save <user>` Doctor: protect a player (Night phase only)
+- `/divine <user>` Fortune Teller: Investigate a player's role (Night phase only).
 - `/mycommands` List commands for your role
 - `/reset` Reset the Mafia game (admin only)
 - `/mafia role` View all roles in the Mafia game
