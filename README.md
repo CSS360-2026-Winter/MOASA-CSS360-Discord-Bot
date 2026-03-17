@@ -1,16 +1,13 @@
 # MOASA CSS360 Discord Bot
 
 ## Project Overview
-This repository is a group project for CSS360.
-The team is using this repository to set up collaboration tools and infrastructure for a Discord bot project.
-The bot simulates a fully interactive multiplayer game of Mafia with automated phase management, role logic, and persistent stat tracking.
+MOASA is a fully interactive, automated Mafia game bot. It manages complex state transitions, role-specific logic, persistent data tracking, and immersive storytelling to bring the classic social deduction game to Discord.
 
-## Current Project Status
-- Group repository and individual forks created
-- GitHub Projects (Kanban board) set up
-- Discord deployment server created
-- Discord test servers created
-- Project is currently in the planning and setup phase
+## Current Project Status: COMPLETED (Winter 2026)
+- Core Engine: Fully functional Night/Day cycle with automated phase resolution.
+- Role Logic: Dynamic assignment for Mafia, Doctor, Fortune Teller, and Civilian roles.
+- Persistence: Full stat tracking with per-game snapshots and lifetime leaderboards.
+- User Experience: Immersive visuals, randomized narrative stories, and robust error handling.
 
 ## Team
 - Team Name: MOASA
@@ -53,7 +50,7 @@ Game Integrity & Fair Play Enhancements:
 - Night victims receive a private DM revealing the Mafia member responsible
 
 
-## Sprint 3 (Version2.1)
+## Sprint 3 (Version 2.1)
 
 Sprint 3 focuses on modernizing the user experience and expanding gameplay depth through new interaction methods and advanced role logic.
 
@@ -62,10 +59,8 @@ Completed features include:
 - Implemented the `/divine` command, allowing players to investigate a target's role during the Night phase.
 - Integrated divination success tracking into the global scoring and stats system.
 - Implemented a dynamic **Day Counter** (e.g., "DAY 1", "DAY 2") to help players track game progress.
-
-## Course Context
-This project is part of CSS360 and is under active development.
-The README will be updated as the project design becomes clearer.
+- Implemented randomized **Death & Save stories** to provide unique flavor text for every morning phase.
+- Implemented an automated role displaying system where users receive a DM once the game starts, displaying their role, custom role-card images, and commands.
 
 ## Commands
 
@@ -105,3 +100,8 @@ Recent games are recorded using per-game snapshots so /stats can show what happe
 
 Note:
 - The data/ folder is runtime output and should not be committed to git. Add `data/` to .gitignore.
+
+
+### End of Project Note
+
+Developed for CSS360 Software Engineering. Special thanks to Dr. Champion for the guidance and support throughout the software lifecycle!
