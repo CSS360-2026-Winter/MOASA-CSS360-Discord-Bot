@@ -61,13 +61,14 @@ Completed features include:
 - Implemented a dynamic **Day Counter** (e.g., "DAY 1", "DAY 2") to help players track game progress.
 - Implemented randomized **Death & Save stories** to provide unique flavor text for every morning phase.
 - Implemented an automated role displaying system where users receive a DM once the game starts, displaying their role, custom role-card images, and commands.
+- Implemented a button-based lobby for game recruitment
+- Implemented a button-based voting system during the day phase
 
 ## Commands
 
 ### Mafia Game
-- `/join` Join the Mafia game (starts recruitment if no game is active)
+- `/join` Start the Mafia game recruitment lobby (subsequent players join using buttons)
 - `/role` View your Mafia role (private)
-- `/vote <user>` Vote to eliminate a player (Day phase only)
 - `/kill <user>` Mafia: eliminate a player (Night phase only)
 - `/save <user>` Doctor: protect a player (Night phase only)
 - `/divine <user>` Fortune Teller: Investigate a player's role (Night phase only).
@@ -79,6 +80,14 @@ Completed features include:
 
 ### Fun
 - `/meme` Get a meme
+
+## Buttons
+
+### Recruitment
+- After a player starts a lobby using `/join`, subsequent players click the "Join Game" button to join the lobby
+
+### Voting
+- During the day phase, players vote for the Mafia suspect by clicking the suspect's button
 
 ## Game State Management
 
