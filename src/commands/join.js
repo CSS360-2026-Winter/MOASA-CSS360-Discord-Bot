@@ -84,7 +84,7 @@ export default {
     collector.on('collect', async (i) => {
       if (joinedPlayers.has(i.user.id)) {
         return i.reply({ 
-          content: "⚠️ You have already joined this lobby!", 
+          content: `⚠️ ${i.user}, You already join. please don't click join button again!`, 
           ephemeral: true 
         });
       }
