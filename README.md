@@ -79,6 +79,8 @@ Completed features include:
 - `/mafia role` View all roles in the Mafia game
 - `/rules` View the rules of the Mafia game
 - `/stats` Show player stats across all games and recent games
+- `/players` command so users can view all current players and their status
+- `/fortune` command to provide classic-style random fortune cookie messages for extra flavor and immersion
 
 ### Fun
 - `/meme` Get a meme
